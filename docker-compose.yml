@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  # PHP-FPM 服务
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./php-code:/var/www/html
+    networks:
+      - my_network
+
+  # Nginx 服务
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx-config:/etc/nginx/conf.d
+      - ./php-code:/var/www/html
+      - ./logs/nginx:/var/log/nginx   # 添加 Nginx 日志目录映射
+    ports:
+      - "80:80"
+    networks:
+      - my_network
+    depends_on:
+      - php
+
+  # MySQL 服务
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: your_database_name
+      MYSQL_USER: your_database_user
+      MYSQL_PASSWORD: your_database_password
+    volumes:
+      - ./data/mysql_data:/var/lib/mysql
+      - ./logs/mysql:/var/log/mysql   # 添加这行以映射MySQL日志到主机  
+    networks:
+      - my_network
+
+# 定义自定义网络
+networks:
+  my_network:
+
+# 定义 MySQL 数据持久化卷
+volumes:
+  mysql_data:
