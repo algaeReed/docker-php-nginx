@@ -38,6 +38,18 @@ services:
       - ./logs/mysql:/var/log/mysql   # 添加这行以映射MySQL日志到主机  
     networks:
       - my_network
+   # phpMyAdmin 服务
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    links:
+      - mysql
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    networks:
+      - my_network
 
 # 定义自定义网络
 networks:
